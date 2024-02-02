@@ -37,7 +37,7 @@ bubbleSort list = bubbleSortHelper list (length list)
 
 main :: IO ()
 main = do
- let list = [1,2,3,4,5,6,7,8,9,10]
+ let list = [10,9..0]
      sorted = bubbleSort list
- print.show$linearSearch list 10
- print.show$binarySearch list 10
+ print.show$linearSearch sorted 10
+ print.show$binarySearch sorted 10
