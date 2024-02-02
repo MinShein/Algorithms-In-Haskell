@@ -9,6 +9,7 @@ linearSearch (x:xs) target
 binarySearch :: (Ord a) => [a] -> a -> Maybe Int
 binarySearch [] _ = Nothing
 binarySearch list target = binarySearchHelper list target 0 (length list - 1)
+
 binarySearchHelper :: (Ord a) => [a] -> a -> Int -> Int -> Maybe Int
 binarySearchHelper list target low high 
  | low > high = Nothing
