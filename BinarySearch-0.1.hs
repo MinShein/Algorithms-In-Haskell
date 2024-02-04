@@ -1,3 +1,7 @@
+-- Created by Min Thuta Shein
+-- Binary Search Algorithm
+-- 2-4-2024
+
 binarySearch :: [Int] -> Int -> Int
 binarySearch [] _ = -1
 binarySearch list target = binarySearchHelper list target 0 (length list - 1)
