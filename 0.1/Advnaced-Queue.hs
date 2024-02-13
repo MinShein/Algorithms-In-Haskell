@@ -1,3 +1,4 @@
+{-# LANGUAGE ExistentialQuantification #-}
 data List a = Empty | Cons !a !(List a) deriving (Show,Eq)
 
 createQueue :: List a -> List a
@@ -17,6 +18,7 @@ dequeue' (Cons a b) = reverseList b Empty
 
 isEmpty :: forall a.(Eq a) => List a -> Bool
 isEmpty Empty = True
+isEmpty (Cons a Empty) = False
 isEmpty (Cons a b)
     | b /= Empty = False
     | otherwise = isEmpty b
@@ -33,8 +35,31 @@ main = do
         enq2  = enqueue 2 enq1
         enq3  = enqueue 3 enq2
 
-    let deq1  = dequeue enq3
-        deq2  = dequeue enq2
-        deq3  = dequeue enq1
+    putStrLn "Initial Queue:"
+    printQueue enq3
 
-    print $ isEmpty deq3
+    let deq1  = dequeue enq3
+    putStrLn "\nAfter Dequeue 1:"
+    printQueue deq1
+
+    let deq2  = dequeue deq1
+    putStrLn "\nAfter Dequeue 2:"
+    printQueue deq2
+
+    let enq4  = enqueue 4 deq2
+    putStrLn "\nAfter Enqueue 4:"
+    printQueue enq4
+
+    let deq3  = dequeue enq4
+    putStrLn "\nAfter Dequeue 3:"
+    printQueue deq3
+
+    print $ isEmpty (dequeue deq3)
+
+-- Helper function to print the elements of the queue
+printQueue :: Show a => List a -> IO ()
+printQueue Empty = return ()
+printQueue (Cons a Empty) = print $ a
+printQueue (Cons a b) = do
+    putStr $ show a ++ " "
+    printQueue b
