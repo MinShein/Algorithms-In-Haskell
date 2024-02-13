@@ -9,9 +9,11 @@ enqueue :: a -> List a -> List a
 enqueue x Empty = Cons x Empty
 enqueue x (Cons a b) = Cons x (Cons a b)
 
-dequeue :: List a -> List a
+dequeue :: (Eq a) => List a -> List a
 dequeue Empty = Empty
-dequeue list = dequeue' (reverseList list Empty)
+dequeue list 
+ | list /= Empty = dequeue' (reverseList list Empty)
+ | otherwise = dequeue Empty
 
 dequeue' :: List a -> List a
 dequeue' (Cons a b) = reverseList b Empty
