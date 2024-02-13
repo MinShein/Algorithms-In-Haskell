@@ -1,5 +1,5 @@
 {-# LANGUAGE ExistentialQuantification #-}
-data List a = Empty | Cons !a !(List a) deriving (Show,Eq)
+data List a = Empty | Cons !a !(List a) deriving (Show, Eq)
 
 createQueue :: List a -> List a
 createQueue Empty = Empty
@@ -16,12 +16,9 @@ dequeue list = dequeue' (reverseList list Empty)
 dequeue' :: List a -> List a
 dequeue' (Cons a b) = reverseList b Empty
 
-isEmpty :: forall a.(Eq a) => List a -> Bool
+isEmpty :: List a -> Bool
 isEmpty Empty = True
-isEmpty (Cons a Empty) = False
-isEmpty (Cons a b)
-    | b /= Empty = False
-    | otherwise = isEmpty b
+isEmpty _     = False
 
 reverseList :: List a -> List a -> List a
 reverseList Empty r = r
