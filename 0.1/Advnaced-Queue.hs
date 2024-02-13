@@ -53,7 +53,9 @@ main = do
     let deq3  = dequeue enq4
     putStrLn "\nAfter Dequeue 3:"
     printQueue deq3
-
+    
+    putStrLn "\nAfter Dequeue 4:"
+    putStrLn "Is the Queue Empty?"
     print $ isEmpty (dequeue deq3)
 
 -- Helper function to print the elements of the queue
