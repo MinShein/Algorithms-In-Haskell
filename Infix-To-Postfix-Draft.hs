@@ -46,7 +46,9 @@ infixToPostfix expr = helper expr [] []
           then helper xs (push (peek operator) operand) (x:pop operator)
           else if precedence x < precedence (peek operator)
           then extractAll xs operand operator x
-          else helper xs operand (x:operator)
+          else if precedence x > precedence (peek operator)
+          then helper xs operand (x:operator)
+          else helper xs operand operator
       | otherwise = helper xs operand operator
     precedence :: Char -> Int
     precedence chr = case chr of
@@ -65,5 +67,9 @@ infixToPostfix expr = helper expr [] []
 
 main :: IO ()
 main = do
- let expr = "A+B-C*D+E/F*E+G/A"
- print $ infixToPostfix expr
+ let expr0 = "A+B-C*D+E/F*E+G/A"
+     expr1 = "A^B^C*D+E-F/E^G^A+C-D"
+     expr2 = "A*B+C-D+A^B^C-D/A"
+ print $ infixToPostfix expr0
+ print $ infixToPostfix expr1
+ print $ infixToPostfix expr2
