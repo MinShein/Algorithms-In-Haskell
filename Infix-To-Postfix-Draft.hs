@@ -1,75 +1,32 @@
-push :: Char -> [Char] -> [Char]
-push x [] = [x]
-push x xs = reverse (x:(reverse xs))
+import Data.List
 
-pop :: [Char] -> [Char]
-pop [] = []
-pop (x:xs) = xs
+p '+' = 1
+p '-' = 1
+p '*' = 2
+p '/' = 2
+p '^' = 3
+p _   = 0
 
-peek :: [Char] -> Char
-peek (x:_) = x
-
-isEmpty :: [Char] -> Bool
-isEmpty [] = True
-isEmpty _  = False
-
-delimit :: [Char] -> Bool
-delimit [] = True
-delimit copy = matching copy []
- where
- matching :: [Char] -> [Char] -> Bool
- matching [] ret = isEmpty ret
- matching (x:xs) ret
-  | elem x "(" = matching xs (push x ret)
-  | elem x ")" = matching xs (pop ret)
-  | otherwise = matching xs ret
-
-isParenthesis :: Char -> Bool
-isParenthesis chr = elem chr "()"
-isOperand :: Char -> Bool
-isOperand chr = elem chr ['A'..'Z'] || elem chr ['a'..'z']
-isOperator :: Char -> Bool
-isOperator chr = elem chr "+-*/^"
-
-infixToPostfix :: [Char] -> [Char]
-infixToPostfix expr = helper expr [] []
-  where
-    helper :: [Char] -> [Char] -> [Char] -> [Char]
-    helper [] operand operator = operand ++ operator
-    helper copy@(x:xs) operand operator
-      | delimit copy == False = error "Delimiter not matched."
-      | isParenthesis x = helper xs operand operator
-      | isOperand x = helper xs (push x operand) operator
-      | isOperator x && isEmpty operator = helper xs operand (x:operator)
-      | isOperator x && not (isEmpty operator) =
-          if precedence x == precedence (peek operator)
-          then helper xs (push (peek operator) operand) (x:pop operator)
-          else if precedence x < precedence (peek operator)
-          then extractAll xs operand operator x
-          else if precedence x > precedence (peek operator)
-          then helper xs operand (x:operator)
-          else helper xs operand operator
-      | otherwise = helper xs operand operator
-    precedence :: Char -> Int
-    precedence chr = case chr of
-      '+' -> 1
-      '-' -> 1
-      '*' -> 2
-      '/' -> 2
-      '^' -> 3
-      _   -> 0
-    extractAll :: [Char] -> [Char] -> [Char] -> Char -> [Char]
-    extractAll xs operand operator x = extractAll' xs operand operator x (length operator)
-      where
-        extractAll' :: [Char] -> [Char] -> [Char] -> Char -> Int -> [Char]
-        extractAll' xs operand [] x 0 = helper xs operand [x]
-        extractAll' xs operand (y:ys) x len = extractAll' xs (push y operand) ys x (len-1)
-
-main :: IO ()
+tokenizer [] postfix stack
+ = reverse (postfix) ++ (head stack):[]
+tokenizer (x:xs) postfix stack
+ | x `elem` "("
+ = tokenizer xs postfix (x:stack)
+ | x `elem` ")"
+ = tokenizer xs ((takeWhile (/= '(') stack)++postfix) (tail (dropWhile (== '(') stack))
+ | x `elem` "+-*/^" && null stack
+ = tokenizer xs postfix (x:stack)
+ | x `elem` ['a'..'z']
+ = tokenizer xs (x:postfix) stack
+ | x `elem` "+-*/^" && not (null stack)
+ = if p x > p (head stack)
+   then tokenizer xs postfix (x:stack)
+   else if p x <= p (head stack)
+   then tokenizer xs ((head stack):postfix) (x:delete (head stack)  stack)
+   else tokenizer xs postfix stack
+ | otherwise 
+ = tokenizer xs postfix stack
+ 
 main = do
- let expr0 = "A+B-C*D+E/F*E+G/A"
-     expr1 = "A^B^C*D+E-F/E^G^A+C-D"
-     expr2 = "A*B+C-D+A^B^C-D/A"
- print $ infixToPostfix expr0
- print $ infixToPostfix expr1
- print $ infixToPostfix expr2
+ print "Infix to Postfix"
+ print $ tokenizer "((((a+b)-c)^d)/e)-f" [] []
